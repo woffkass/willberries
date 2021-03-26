@@ -217,7 +217,7 @@ const filterCards = function (field, value) {
 
 navigationLink.forEach(function (link) {
   link.addEventListener('click', (event) => {
-    event.preventDefault
+    event.preventDefault()
     const field = link.dataset.field
     const value = link.textContent
     if (value == 'All') {
@@ -226,4 +226,35 @@ navigationLink.forEach(function (link) {
       filterCards(field, value)
     }
   })
+})
+
+const modalForm = document.querySelector('.modal-form')
+
+const postData = (dataUser) =>
+  fetch('server.php', {
+    method: 'POST',
+    body: dataUser,
+  })
+
+modalForm.addEventListener('submit', (event) => {
+  event.preventDefault()
+  const formData = new FormData(modalForm)
+  formData.append('cart', JSON.stringify(cart.cartGoods))
+  postData(formData)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(response.status)
+      }
+      alert('Ваш заказ успешно отправлне с вами свяжутся в ближайшее время')
+      console.log(response.statusText)
+    })
+    .catch((err) => {
+      alert('К сожалению произошла ошибка')
+      console.error(err)
+    })
+    .finally(() => {
+      closeModal()
+      modalForm.reset()
+      cart.clearCart()
+    })
 })
